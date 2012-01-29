@@ -39,6 +39,8 @@ public class PageParser {
 	    a_page = null;
     }
 		if(a_page != null){
+			long start_time = System.nanoTime();
+			
 			Source page_source = new Source(a_page.getContents());
 
 			page_source.fullSequentialParse();
@@ -63,6 +65,8 @@ public class PageParser {
 			while (word_mat.find()) {
 				a_page.addWord(word_mat.group(1));
 			}
+			
+			a_page.setParseTime(System.nanoTime() - start_time);
 			
 			for(String s:a_page.getLinks()){
 				try {

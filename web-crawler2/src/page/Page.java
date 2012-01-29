@@ -87,7 +87,18 @@ public class Page {
 	public void addWord(String the_word){
 		my_words.add(the_word);
 	}
-
+	/**
+	 * Gets the amount of time it took to parse the page.
+	 * @param the_parse_time The amount of time it took to parse the page.
+	 */
+	public void setParseTime(long the_parse_time) {
+	  my_parse_time = the_parse_time;
+	  
+  }
+	/**
+	 * Creates a page with the given address.
+	 * @param the_address The internet address of the page.
+	 */
 	public Page(URI the_address){
 		my_address = the_address;
 	}
@@ -115,5 +126,6 @@ public class Page {
 		s.append("Address: ").append(my_address).append("\nContents: ").append(my_contents);
 		return s.toString();
 	}
+
 	
 }

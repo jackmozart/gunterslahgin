@@ -28,7 +28,7 @@ public class PageAnalyzer {
 			a_page = null;
 		}
 		if(a_page != null){
-			
+		  
 			
 			try{
 				my_completed_pages.put(a_page);
