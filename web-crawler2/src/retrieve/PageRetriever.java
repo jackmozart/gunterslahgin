@@ -11,7 +11,7 @@ public class PageRetriever {
 	private Set<Page> pages_retrieved;
 	
 	/**
-	 * Retrieve the contents of the page.
+	 * Retrieve the contents of the page if I haven't already retrieved it.
 	 * @param the_page
 	 */
 	public void retrieve(Page the_page){
