@@ -1,4 +1,4 @@
-package Page;
+package page2;
 
 import java.net.URI;
 import java.util.List;

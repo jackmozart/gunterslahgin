@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Set;
 
-import Page.Page;
+import page2.Page;
+
 
 public class PageRetriever {
 	private Set<Page> pages_retrieved;
