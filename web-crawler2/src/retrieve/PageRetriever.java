@@ -52,6 +52,12 @@ public class PageRetriever {
 				}
 				
 				a_page.setContents(html.toString());	
+				
+				try {
+	        my_pages_to_parse.put(a_page);
+        } catch (InterruptedException e) {
+	        //Do nothing, just return, we probably want to stop!
+        }
 			}
 		}
 	}
