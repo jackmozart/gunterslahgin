@@ -3,6 +3,7 @@ package gui;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -45,21 +46,18 @@ public class CrawlerGUI extends JFrame implements ActionListener{
 	private JLabel my_output;
 
 	private JButton my_stopButton;
+
+	private JPanel my_keywordPanel;
 	
 	public CrawlerGUI (){
 		super();
 		//sets up the window
-		this.setTitle("I SAID GOOD DAY SIR");
+		this.setTitle("Gunterslagin the web since 1988");
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	     
 		//sets the icon in the os toolbar and window icon
-		Image icon = Toolkit.getDefaultToolkit().createImage("src/gui/icon.jpg");
+		Image icon = Toolkit.getDefaultToolkit().createImage("src/gui/crawler_icon.png");
 		this.setIconImage(icon);
-		
-
-
-
-		
 		
 		//adds panel to the window
 		my_runPanel = new JPanel(new FlowLayout());
@@ -128,6 +126,18 @@ public class CrawlerGUI extends JFrame implements ActionListener{
 			System.out.print("Stop button pressed");
 		}
 		this.pack();
+	}
+	
+	
+	private void keyWordPanel(){
+		my_keywordPanel = new JPanel(new GridLayout(10,3));
+		
+		
+		
+		
+		
+		
+		this.add(my_keywordPanel);
 	}
 
 	
