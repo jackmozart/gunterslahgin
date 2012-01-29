@@ -1,5 +1,7 @@
 package analyze;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +30,16 @@ public class PageAnalyzer {
 			a_page = null;
 		}
 		if(a_page != null){
-		  
+			//TODO replace pretend with a reference to the keywords map in statistics.
+			Map<String, Integer> pretend_keywords = new HashMap<String, Integer>();
+			
+			for(String word:a_page.getWords()){
+				if(pretend_keywords.containsKey(word)){
+					pretend_keywords.put(word, pretend_keywords.get(word) + 1);
+				}
+			}
+			
+		  //TODO update statistics.
 			
 			try{
 				my_completed_pages.put(a_page);

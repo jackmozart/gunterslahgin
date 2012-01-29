@@ -68,6 +68,10 @@ public class PageParser {
 			
 			a_page.setParseTime(System.nanoTime() - start_time);
 			
+			synchronized(this){
+				//TODO update stats with parse time.
+			}
+			
 			for(String s:a_page.getLinks()){
 				try {
 	        my_pages_to_retrieve.put(new Page(new URI(s)));

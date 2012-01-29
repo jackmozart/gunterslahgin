@@ -64,6 +64,13 @@ public class Page {
 	public List<String> getLinks() {
   	return my_links;
   }
+	/**
+	 * Gets the map of keywords and how often they were found in the page.
+	 * @return A map of keywords and how often they were found in the page.
+	 */
+	public Map<String, Integer> getKeywordMatches() {
+	  return my_keyword_matches;
+  }
 	
 	/**
 	 * Adds a link to the list of links found on the page.
@@ -95,6 +102,8 @@ public class Page {
 	  my_parse_time = the_parse_time;
 	  
   }
+	
+	
 	/**
 	 * Creates a page with the given address.
 	 * @param the_address The internet address of the page.
