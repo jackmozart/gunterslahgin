@@ -4,6 +4,11 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This is a page class!
+ * @author jim
+ *
+ */
 public class Page {
 	/**
 	 * The contents of the page, whether it be html or plain text.
