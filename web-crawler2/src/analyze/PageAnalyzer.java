@@ -9,9 +9,17 @@ import page.Page;
 import statistics.Statistics;
 
 public class PageAnalyzer {
+	/**
+	 * A Queue of pages to analyze that is thread-safe.
+	 */
 	private BlockingQueue<Page> my_pages_to_analyze;
+	/**
+	 * A Queue of pages that are completed that is thread-safe.
+	 */
 	private BlockingQueue<Page> my_completed_pages;
-	
+	/**
+	 * The statistics that will be reported to the user.
+	 */
 	private Statistics my_stats;
 
 	public PageAnalyzer(BlockingQueue<Page> the_pages_to_analyze,

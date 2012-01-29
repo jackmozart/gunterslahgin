@@ -16,8 +16,17 @@ public class PageRetriever {
 	 * A set of all pages that have been retrieved.
 	 */
 	private Set<Page> pages_retrieved;
+	/**
+	 * A Queue of pages to retrieve that is thread-safe.
+	 */
 	private BlockingQueue<Page> my_pages_to_retrieve;
+	/**
+	 * A Queue of pages to parse that is thread-safe.
+	 */
 	private BlockingQueue<Page> my_pages_to_parse;
+	/**
+	 * The statistics that will be reported to the user.
+	 */
 	private Statistics my_stats;
 	
 	public PageRetriever(BlockingQueue<Page> the_pages_to_retrieve, BlockingQueue<Page> the_pages_to_parse, Statistics the_stats){

@@ -15,10 +15,21 @@ import page.Page;
 import statistics.Statistics;
 
 public class PageParser {
+	/**
+	 * A Queue of pages to parse that is thread-safe.
+	 */
 	private BlockingQueue<Page> my_pages_to_parse;
+	/**
+	 * A Queue of pages to retrieve that is thread-safe.
+	 */
 	private BlockingQueue<Page> my_pages_to_retrieve;
+	/**
+	 * A Queue of pages to analyze that is thread-safe.
+	 */
 	private BlockingQueue<Page> my_pages_to_analyze;
-	
+	/**
+	 * The statistics that will be reported to the user.
+	 */
 	private Statistics my_stats;
 
 	public PageParser(BlockingQueue<Page> the_pages_to_parse,
