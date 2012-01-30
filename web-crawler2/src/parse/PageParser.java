@@ -45,6 +45,20 @@ public class PageParser {
 	  my_pages_to_analyze = the_pages_to_analyze;
 	  my_pages_parsed = 0;
   }
+	/**
+	 * Gets the number of pages that have been parsed so far.
+	 * @return The number of pages that have been parsed.
+	 */
+	public int getPagesParsed(){
+		return my_pages_parsed;
+	}
+	/**
+	 * Gets the number of nanoseconds spent parsing pages.
+	 * @return the number of nanoseconds spent parsing pages.
+	 */
+	public long getPageParseTime(){
+		return my_page_parse_time;
+	}
 	
 	public void parse(){
 		Page a_page;

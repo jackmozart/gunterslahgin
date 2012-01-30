@@ -1,12 +1,14 @@
 package crawler;
 
+import java.util.Map;
+
 import page.Page;
 
 public interface Crawler {
-	/**
-	 * Starts the crawling process.
-	 */
-	public void crawl(Page seed_page);
-	
-	
+	void crawl(Page the_seed_page, String[] the_keywords, int the_max_pages);
+	Map<String, Integer> getKeywordCounts(); 
+	int getPagesCrawled();
+	int getPagesParsed();
+	long getParseTime();
+	long getTimeElapsed();
 }
