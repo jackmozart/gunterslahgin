@@ -1,7 +1,6 @@
 package crawler;
 
 import page.Page;
-import statistics.Statistics;
 
 public class CrawlerMulti implements Crawler {
 
@@ -9,12 +8,6 @@ public class CrawlerMulti implements Crawler {
 	public void crawl(Page seed_page) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public Statistics getStatistics() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

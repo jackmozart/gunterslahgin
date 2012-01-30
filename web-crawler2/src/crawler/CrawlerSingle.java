@@ -1,7 +1,6 @@
 package crawler;
 
 import page.Page;
-import statistics.Statistics;
 
 public class CrawlerSingle implements Crawler {
 
@@ -11,10 +10,5 @@ public class CrawlerSingle implements Crawler {
 	  
   }
 
-	@Override
-  public Statistics getStatistics() {
-	  // TODO Auto-generated method stub
-	  return null;
-  }
 	
 }

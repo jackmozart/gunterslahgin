@@ -1,7 +1,6 @@
 package crawler;
 
 import page.Page;
-import statistics.Statistics;
 
 public interface Crawler {
 	/**
@@ -9,8 +8,5 @@ public interface Crawler {
 	 */
 	public void crawl(Page seed_page);
 	
-	/**
-	 * Gets the statistics about the crawl.
-	 */
-	public Statistics getStatistics();
+	
 }

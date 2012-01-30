@@ -12,7 +12,8 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import page.Page;
-import statistics.Statistics;
+
+
 
 public class PageParser {
 	/**
@@ -28,17 +29,21 @@ public class PageParser {
 	 */
 	private BlockingQueue<Page> my_pages_to_analyze;
 	/**
-	 * The statistics that will be reported to the user.
+	 * The total number of pages parsed so far.
 	 */
-	private Statistics my_stats;
+	private int my_pages_parsed;
+	/**
+	 * The total amount of time spent parsing.
+	 */
+	private long my_page_parse_time;
 
 	public PageParser(BlockingQueue<Page> the_pages_to_parse,
       BlockingQueue<Page> the_pages_to_retrieve,
-      BlockingQueue<Page> the_pages_to_analyze, Statistics the_stats) {
+      BlockingQueue<Page> the_pages_to_analyze) {
 	  my_pages_to_parse = the_pages_to_parse;
 	  my_pages_to_retrieve = the_pages_to_retrieve;
 	  my_pages_to_analyze = the_pages_to_analyze;
-	  my_stats = the_stats;
+	  my_pages_parsed = 0;
   }
 	
 	public void parse(){
@@ -77,10 +82,11 @@ public class PageParser {
 				a_page.addWord(word_mat.group(1));
 			}
 			
-			a_page.setParseTime(System.nanoTime() - start_time);
+			long total_time = System.nanoTime() - start_time;
 			
 			synchronized(this){
-				//TODO update stats with parse time.
+				my_pages_parsed++;
+				my_page_parse_time +=total_time;
 			}
 			
 			for(String s:a_page.getLinks()){

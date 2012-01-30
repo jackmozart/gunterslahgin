@@ -1,12 +1,10 @@
 package analyze;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import page.Page;
-import statistics.Statistics;
 
 public class PageAnalyzer {
 	/**
@@ -17,16 +15,15 @@ public class PageAnalyzer {
 	 * A Queue of pages that are completed that is thread-safe.
 	 */
 	private BlockingQueue<Page> my_completed_pages;
-	/**
-	 * The statistics that will be reported to the user.
-	 */
-	private Statistics my_stats;
-
+  /**
+   * The list of keywords to look for, with their counts.
+   */
+	private Map<String, Integer> my_keywords;
 	public PageAnalyzer(BlockingQueue<Page> the_pages_to_analyze,
-      BlockingQueue<Page> the_completed_pages, Statistics the_stats) {
+      BlockingQueue<Page> the_completed_pages, Map<String, Integer> the_keywords) {
 	  my_pages_to_analyze = the_pages_to_analyze;
 	  my_completed_pages = the_completed_pages;
-	  my_stats = the_stats;
+	  my_keywords = the_keywords;
   }
 	
 	public void analyze(){
@@ -38,12 +35,10 @@ public class PageAnalyzer {
 			a_page = null;
 		}
 		if(a_page != null){
-			//TODO replace pretend with a reference to the keywords map in statistics.
-			Map<String, Integer> pretend_keywords = new HashMap<String, Integer>();
-			
+					
 			for(String word:a_page.getWords()){
-				if(pretend_keywords.containsKey(word)){
-					pretend_keywords.put(word, pretend_keywords.get(word) + 1);
+				if(my_keywords.containsKey(word)){
+					my_keywords.put(word, my_keywords.get(word) + 1);
 				}
 			}
 			

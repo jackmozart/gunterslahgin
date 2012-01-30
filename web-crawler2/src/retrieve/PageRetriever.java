@@ -8,7 +8,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import page.Page;
-import statistics.Statistics;
 
 
 public class PageRetriever {
@@ -24,15 +23,11 @@ public class PageRetriever {
 	 * A Queue of pages to parse that is thread-safe.
 	 */
 	private BlockingQueue<Page> my_pages_to_parse;
-	/**
-	 * The statistics that will be reported to the user.
-	 */
-	private Statistics my_stats;
+
 	
-	public PageRetriever(BlockingQueue<Page> the_pages_to_retrieve, BlockingQueue<Page> the_pages_to_parse, Statistics the_stats){
+	public PageRetriever(BlockingQueue<Page> the_pages_to_retrieve, BlockingQueue<Page> the_pages_to_parse){
 		my_pages_to_retrieve = the_pages_to_retrieve;
 		my_pages_to_parse = the_pages_to_parse;
-		my_stats = the_stats;
 	}
 	
 	/**
