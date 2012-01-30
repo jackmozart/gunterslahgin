@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,9 +15,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -24,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
 
 /**
  * 
@@ -49,7 +53,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 	private JButton my_runButton;
 
-	private JLabel my_output;
+	private JCheckBox my_threadTogle;
 
 	private JButton my_stopButton;
 
@@ -62,6 +66,12 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 	private ArrayList<JLabel> my_totalHit;
 
 	private JPanel my_contentPane;
+	
+	private JLabel my_totalTimeLabel;
+	
+	private JLabel my_pageTimeLabel;
+	
+	private JLabel my_pagesProccesedLabel;
 
 	public CrawlerGUI() {
 		super();
@@ -69,6 +79,8 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_contentPane = new JPanel();
 		my_contentPane.setLayout(new BorderLayout());
 		this.setContentPane(my_contentPane);
+		this.setResizable(false);
+		this.setLocationRelativeTo(null);
 		
 		my_keywordList = new ArrayList<JTextField>();
 
@@ -88,6 +100,9 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		// adds the keyword input pannel
 		keyWordPanel();
 		my_contentPane.add(my_keywordPanel, BorderLayout.NORTH);
+		
+		// add the stats panel
+		this.add(createStatsPane(), BorderLayout.CENTER);
 
 		// adds panel to the window
 		my_runPanel = new JPanel(new FlowLayout());
@@ -105,7 +120,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_input_url = new JTextField(20);
 		my_input_url.setName("input url");
 		my_input_url.setText(DEFULT_START_PAGE);
-		my_input_url.setBackground(Color.GRAY);
+		my_input_url.setBackground(Color.LIGHT_GRAY);
 		my_input_url.setSize(my_input_url.getSize());
 		my_runPanel.add(my_input_url);
 
@@ -120,7 +135,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_num_pages = new JTextField(5);
 		my_num_pages.setName("input seed");
 		my_num_pages.setText(DEFULT_SEED);
-		my_num_pages.setBackground(Color.GRAY);
+		my_num_pages.setBackground(Color.LIGHT_GRAY);
 		my_num_pages.setSize(my_num_pages.getSize());
 		my_runPanel.add(my_num_pages);
 
@@ -135,9 +150,19 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_stopButton.addActionListener(this);
 
 		// make output label
-		my_output = new JLabel();
-		my_output.setFont(new Font("Helvetica", Font.BOLD, 14));
-		my_runPanel.add(my_output);
+		JLabel togleLabel = new JLabel();
+		togleLabel.setText("Multi thread");
+		togleLabel.setToolTipText("If checked the program will run muli threaded.");
+		my_runPanel.add(togleLabel);
+		
+		
+		my_threadTogle = new JCheckBox();
+		my_threadTogle.setToolTipText("If checked the program will run muli threaded.");
+		my_threadTogle.setSelected(true);
+		my_runPanel.add(my_threadTogle);
+		
+		
+		//
 
 		this.pack();
 	}
@@ -177,21 +202,61 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		// add rows of input space
 		for (int i = 0; i < NUM_KEYWORDS; i++) {
 			JTextField key_text1 = new JTextField(KEYWORD_LENGTH);
-			key_text1.setBackground(Color.GRAY);
-			key_text1.setBorder(border);
+			key_text1.setBackground(Color.lightGray);
 			my_keywordPanel.add(key_text1);
 			my_keywordList.add(key_text1);
 
 			JLabel hitPageLabel = new JLabel();
-			hitPageLabel.setBackground(Color.green);
+			hitPageLabel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+			hitPageLabel.setBackground(Color.GRAY);
 			my_keywordPanel.add(hitPageLabel);
 			my_hitPerPage.add(hitPageLabel);
 
+
 			JLabel hitSumLabel = new JLabel();
-			hitSumLabel.setBackground(Color.green);
+			hitSumLabel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+			hitSumLabel.setBackground(Color.GRAY);
 			my_keywordPanel.add(hitSumLabel);
 			my_totalHit.add(hitSumLabel);
 		}
+	}
+	
+	private JPanel createStatsPane(){
+		JPanel statsPane = new JPanel();
+		statsPane.setBackground(Color.white);
+		statsPane.setLayout(new GridLayout());
+		
+
+		
+		//current pages parsed 
+		JLabel pagesLabel = new JLabel();
+		pagesLabel.setText("Pages Paresed:");
+		statsPane.add(pagesLabel);
+		
+		JLabel pagesParsed = new JLabel();
+		pagesParsed.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		statsPane.add(pagesParsed);
+		
+		// Time per page
+		JLabel pageTimeLabel = new JLabel();
+		pageTimeLabel.setText("Time to Parse:");
+		statsPane.add(pageTimeLabel);
+		
+		JLabel pageTime = new JLabel();
+		pageTime.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		statsPane.add(pageTime);
+		
+		//Total elapsed time labels
+		JLabel timeLabel = new JLabel();
+		timeLabel.setText("Total Time:");
+		statsPane.add(timeLabel);
+		
+		JLabel elapsedTime = new JLabel();
+		elapsedTime.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		statsPane.add(elapsedTime);
+		
+		
+		return statsPane;
 	}
 
 	public void start() {
