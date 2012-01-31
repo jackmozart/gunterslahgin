@@ -25,6 +25,8 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 	
 	protected int my_max_pages;
 	
+	protected Stopbit my_stop_bit;
+	
 	public CrawlerGeneric(){
 		my_pages_to_retrieve = new LinkedBlockingQueue<Page>();
 		my_pages_to_parse = new LinkedBlockingQueue<Page>();
@@ -36,6 +38,8 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 		my_page_retriever = new PageRetriever(my_pages_to_retrieve, my_pages_to_parse);
 		my_page_parser = new PageParser(my_pages_to_parse, my_pages_to_retrieve, my_pages_to_analyze);
 		my_page_analyzer = new PageAnalyzer(my_pages_to_analyze, my_completed_pages, my_keyword_counts);
+		
+		my_stop_bit = new Stopbit();
 	}
 	
 	@Override
@@ -52,7 +56,12 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 		my_max_pages = the_max_pages;
 		
 		Thread me = new Thread(this);
-		me.run();
+		me.start();
+	}
+	
+	@Override
+	public void stop(){
+		my_stop_bit.stop = true;
 	}
 	
 	@Override
@@ -75,6 +84,14 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 	@Override
 	public long getTimeElapsed(){
 		return System.nanoTime() - my_crawl_start_time;
+	}
+	@Override
+	public int getUrlsFound(){
+		return my_page_parser.getUrlsFound();
+	}
+	@Override
+	public int getWordCount(){
+		return my_page_parser.getWordCount();
 	}
 	
 }

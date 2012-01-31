@@ -9,6 +9,9 @@ public interface Crawler {
 	Map<String, Integer> getKeywordCounts(); 
 	int getPagesCrawled();
 	int getPagesParsed();
+	int getWordCount();
+	int getUrlsFound();
 	long getParseTime();
 	long getTimeElapsed();
+	void stop();
 }

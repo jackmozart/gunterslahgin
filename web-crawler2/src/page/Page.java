@@ -1,6 +1,8 @@
 package page;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,17 @@ public class Page {
 	 * the number of keyword hits on this page.
 	 */
 	private Map<String, Integer> my_keyword_matches;
+	
+	/**
+	 * Creates a page with the given address.
+	 * @param the_address The internet address of the page.
+	 */
+	public Page(URI the_address){
+		my_address = the_address;
+		my_links = new ArrayList<String>();
+		my_words = new ArrayList<String>();
+		my_keyword_matches = new HashMap<String, Integer>();
+	}
 	
 	/**
 	 * Gets the contents of the page.
@@ -104,13 +117,7 @@ public class Page {
   }
 	
 	
-	/**
-	 * Creates a page with the given address.
-	 * @param the_address The internet address of the page.
-	 */
-	public Page(URI the_address){
-		my_address = the_address;
-	}
+	
 	
 	@Override
 	public int hashCode(){

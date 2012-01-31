@@ -36,6 +36,20 @@ public class PageParser {
 	 * The total amount of time spent parsing.
 	 */
 	private long my_page_parse_time;
+	/**
+	 * The number of urls found on any page.
+	 */
+	private int my_urls_found;
+	/**
+	 * The number of words found on any page.
+	 */
+	private int my_word_count;
+	/**
+	 * 
+	 * @param the_pages_to_parse
+	 * @param the_pages_to_retrieve
+	 * @param the_pages_to_analyze
+	 */
 
 	public PageParser(BlockingQueue<Page> the_pages_to_parse,
       BlockingQueue<Page> the_pages_to_retrieve,
@@ -59,6 +73,20 @@ public class PageParser {
 	public long getPageParseTime(){
 		return my_page_parse_time;
 	}
+	/**
+	 * Get the total number of urls found on any page.
+	 * @return The total number of urls found on any page.
+	 */
+	public int getUrlsFound(){
+		return my_urls_found;
+	}
+	/**
+	 * Gets the total number of words found on any page.
+	 * @return The total number of words found on any page.
+	 */
+	public int getWordCount(){
+		return my_word_count;
+	}
 	
 	public void parse(){
 		Page a_page;
@@ -79,12 +107,10 @@ public class PageParser {
 					.getAllElements(HTMLElementName.A);
 			for (Element linkElement : linkElements) {
 				String href = linkElement.getAttributeValue("href");
-				if (href == null)
-					continue;
-
-				if (href.endsWith(".html") || href.endsWith(".txt")) {
-					a_page.addLink(a_page.getAddress().resolve(href).toString());
-				}
+				
+				if (href == null) continue;
+				
+				a_page.addLink(a_page.getAddress().resolve(href).toString());
 			}
 
 			String page_text = page_source.getTextExtractor().toString();
