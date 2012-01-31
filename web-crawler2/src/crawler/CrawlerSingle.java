@@ -2,13 +2,14 @@ package crawler;
 
 import page.Page;
 
-public class CrawlerSingle implements Crawler {
+public class CrawlerSingle extends CrawlerGeneric implements  Runnable {
 
 	@Override
-  public void crawl(Page seed_page) {
+  public void run() {
 	  // TODO Auto-generated method stub
 	  
   }
+
 
 	
 }
