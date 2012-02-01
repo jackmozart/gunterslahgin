@@ -1,7 +1,5 @@
 package retrieve;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +11,6 @@ import org.htmlparser.Parser;
 import org.htmlparser.beans.StringBean;
 import org.htmlparser.util.ParserException;
 
-import net.htmlparser.jericho.Source;
 import page.Page;
 import crawler.CrawlerTuned;
 import crawler.Stopbit;
