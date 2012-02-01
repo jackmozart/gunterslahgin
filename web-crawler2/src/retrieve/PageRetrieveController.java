@@ -9,6 +9,10 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.htmlparser.Parser;
+import org.htmlparser.beans.StringBean;
+import org.htmlparser.util.ParserException;
+
 import net.htmlparser.jericho.Source;
 import page.Page;
 import crawler.CrawlerTuned;
@@ -32,7 +36,11 @@ public class PageRetrieveController extends Thread {
 	  my_retrievers = new ArrayList<PageRetriever>();
 	  my_pages_seen = new HashSet<Page>();
   }
-
+	
+	public int getNumThreads(){
+		return my_retrievers.size();
+	}
+	
 	public void run() {
 	//start the initial 2 threads
 			my_retrievers.add(new PageRetriever());
@@ -98,18 +106,14 @@ public class PageRetrieveController extends Thread {
 					boolean good_page = true;
 					//System.out.println("Trying to get: " + a_page.getAddress().toString());
 					try {
-						
-						
-		        Source temp = new Source(a_page.getAddress().toURL());
-		        //temp.setLogger(null);
-		        a_page.setContents(temp);
-	        } catch (MalformedURLException e) {
-		        //Ignore the bad page.
-	        	good_page = false;
-	        } catch (IOException e) {
-		        //Ignore the bad page.
-	        	good_page = false;
-	        }
+						Parser a_parser = new Parser(a_page.getAddress().toString());
+						StringBean sb = new StringBean();
+						sb.setURL(a_page.getAddress().toString());
+						a_page.setContents(sb.getStrings());
+		        a_page.setParser(a_parser);
+	        } catch (ParserException e) {
+	          good_page = false;
+          }
 					
 					//System.out.println("Source Found: " + a_page.getContents().toString());
 					if(good_page){

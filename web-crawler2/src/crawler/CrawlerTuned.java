@@ -102,6 +102,16 @@ public class CrawlerTuned implements Crawler {
 		my_stop.stop = true;
 	}
 	
+	public int getNumRet(){
+		return my_page_retriever.getNumThreads();
+	}
+	public int getNumPar(){
+		return my_page_parser.getNumThreads();
+	}
+	public int getNumAna(){
+		return my_page_analyzer.getNumThreads();
+	}
+	
 	public synchronized boolean requestThread(){
 		boolean result = false;
 		if(my_used_threads < my_max_threads){

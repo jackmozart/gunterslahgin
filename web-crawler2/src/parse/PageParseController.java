@@ -12,6 +12,15 @@ import java.util.regex.Pattern;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 
+import org.htmlparser.Node;
+import org.htmlparser.beans.StringBean;
+import org.htmlparser.filters.AndFilter;
+import org.htmlparser.filters.HasAttributeFilter;
+import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.tags.LinkTag;
+import org.htmlparser.util.NodeList;
+import org.htmlparser.util.ParserException;
+
 import page.Page;
 import crawler.CrawlerTuned;
 import crawler.Stopbit;
@@ -43,7 +52,11 @@ public class PageParseController extends Thread {
 	  
 	  my_parsers = new ArrayList<PageParser>();
   }
-
+	
+	public int getNumThreads(){
+		return my_parsers.size();
+	}
+	
 	public void run() {
 		//start the initial 2 threads
 		my_parsers.add(new PageParser());
@@ -121,29 +134,26 @@ public class PageParseController extends Thread {
 				//System.out.println("Trying to parse: " + a_page.getAddress());
 				long start_time = System.nanoTime();
 				
-				a_page.getContents().fullSequentialParse();
-
-				List<Element> linkElements = a_page.getContents()
-						.getAllElements(HTMLElementName.A);
-				for (Element linkElement : linkElements) {
-					String href = linkElement.getAttributeValue("href");
-					
-					if (href == null) continue;
-					try{
-						a_page.addLink(a_page.getAddress().resolve(href).toString());
-					} catch (IllegalArgumentException ill_arg_exc){
-						//Was a bad link, just ignore it and move on.
-					}
-					
-				}
-
-				String page_text = a_page.getContents().getTextExtractor().toString();
-
-				Pattern word_pat = Pattern.compile("\\b(\\w+)\\b");
-				Matcher word_mat = word_pat.matcher(page_text);
+				try {
+	        NodeList nodes = a_page.getParser().parse(new AndFilter(new TagNameFilter("A"), new HasAttributeFilter("HREF")));
+	        
+	        for(Node node : nodes.toNodeArray()){
+	        	if(node instanceof LinkTag){
+	        		LinkTag linknode = (LinkTag)node;
+	        		if(linknode.isHTTPLikeLink() && !linknode.isJavascriptLink()){
+	        			a_page.addLink(a_page.getAddress().resolve(linknode.extractLink()).toString());
+	        		}
+	        	}
+	        }
+	        
+        } catch (ParserException e1) {
+	        //No hard feelings if the parser fails.
+        } catch (IllegalArgumentException e2){
+        	//The link couldn't be resolved, probably had bad chars in it.
+        }
 				
-				while (word_mat.find()) {
-					a_page.addWord(word_mat.group(1));
+				for(String word : a_page.getContents().split(" ")) {
+					a_page.addWord(word);
 					
 				}
 				

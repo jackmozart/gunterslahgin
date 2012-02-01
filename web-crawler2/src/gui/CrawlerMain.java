@@ -16,10 +16,10 @@ public class CrawlerMain {
 	public static void main(String[] args) {
 		String[] keys = new String[] {"Hitler", "puppy", "the", "and"};
 		
-		Crawler c = new CrawlerTuned();
+		CrawlerTuned c = new CrawlerTuned();
 		try {
 			
-	    c.crawl(new Page(new URI("http://gamespot.com")), keys, 0);
+	    c.crawl(new Page(new URI("http://en.wikipedia.com")), keys, 0);
 	    
     } catch (URISyntaxException e) {
 	    // TODO Auto-generated catch block
@@ -46,6 +46,7 @@ public class CrawlerMain {
       output.append("\nAverage parse time per page:").append((double)time_parsed / 1000000000.0 / (double) pages_crawled);
       output.append("\nTotal running time:").append((double)time_elapsed / 1000000000.0);
       output.append("\nPages per second: ").append((double)pages_crawled / ((double)time_elapsed / 1000000000.0));
+      output.append("\nRetrievers: ").append(c.getNumRet()).append("\tParsers: ").append(c.getNumPar()).append("\tAnalyzers: ").append(c.getNumAna());
       System.out.print(output);
       
       try {

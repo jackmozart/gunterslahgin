@@ -34,7 +34,9 @@ public class PageAnalyzeController extends Thread{
 	  
 	  my_analyzers = new ArrayList<PageAnalyzer>();
   }
-
+	public int getNumThreads(){
+		return my_analyzers.size();
+	}
 	public void run() {
 	  //start the initial 2 threads
 		my_analyzers.add(new PageAnalyzer());
