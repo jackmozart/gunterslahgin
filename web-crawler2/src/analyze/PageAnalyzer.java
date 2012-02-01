@@ -11,18 +11,17 @@ public class PageAnalyzer {
 	 * A Queue of pages to analyze that is thread-safe.
 	 */
 	private BlockingQueue<Page> my_pages_to_analyze;
-	/**
-	 * A Queue of pages that are completed that is thread-safe.
-	 */
-	private BlockingQueue<Page> my_completed_pages;
   /**
    * The list of keywords to look for, with their counts.
    */
 	private Map<String, Integer> my_keywords;
-	public PageAnalyzer(BlockingQueue<Page> the_pages_to_analyze,
-      BlockingQueue<Page> the_completed_pages, Map<String, Integer> the_keywords) {
+	/**
+	 * Total number of pages that have been analyzed.
+	 */
+	private int my_pages_analyzed;
+	
+	public PageAnalyzer(BlockingQueue<Page> the_pages_to_analyze, Map<String, Integer> the_keywords) {
 	  my_pages_to_analyze = the_pages_to_analyze;
-	  my_completed_pages = the_completed_pages;
 	  my_keywords = the_keywords;
   }
 	
@@ -43,15 +42,15 @@ public class PageAnalyzer {
 				}
 			}
 			
-		  //TODO update statistics.
-			
-			try{
-				my_completed_pages.put(a_page);
-			}catch (InterruptedException e1) {
-				//Do nothing, we probably want to stop.
-			}
+		  synchronized(this){
+		  	my_pages_analyzed++;
+		  }
 		}
 	}
+
+	public int getPagesAnalyzed() {
+	  return my_pages_analyzed;
+  }
 	
 	
 }

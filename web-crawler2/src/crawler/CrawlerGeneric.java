@@ -14,7 +14,6 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 	protected BlockingQueue<Page> my_pages_to_retrieve;
 	protected BlockingQueue<Page> my_pages_to_parse;
 	protected BlockingQueue<Page> my_pages_to_analyze;
-	protected BlockingQueue<Page> my_completed_pages;
 	protected Map<String, Integer> my_keyword_counts;
 	
 	protected PageRetriever my_page_retriever;
@@ -31,19 +30,22 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 		my_pages_to_retrieve = new LinkedBlockingQueue<Page>();
 		my_pages_to_parse = new LinkedBlockingQueue<Page>();
 		my_pages_to_analyze = new LinkedBlockingQueue<Page>();
-		my_completed_pages = new LinkedBlockingQueue<Page>();
 		
 		my_keyword_counts = new HashMap<String, Integer>();
 		
 		my_page_retriever = new PageRetriever(my_pages_to_retrieve, my_pages_to_parse);
 		my_page_parser = new PageParser(my_pages_to_parse, my_pages_to_retrieve, my_pages_to_analyze);
-		my_page_analyzer = new PageAnalyzer(my_pages_to_analyze, my_completed_pages, my_keyword_counts);
+		my_page_analyzer = new PageAnalyzer(my_pages_to_analyze, my_keyword_counts);
 		
 		my_stop_bit = new Stopbit();
+		
+		
 	}
 	
 	@Override
 	public void crawl(Page the_seed_page, String[] the_keywords, int the_max_pages){
+		my_crawl_start_time = System.nanoTime();
+		
 		try {
 	    my_pages_to_retrieve.put(the_seed_page);
     } catch (InterruptedException e) {
@@ -71,7 +73,7 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 	
 	@Override
 	public int getPagesCrawled(){
-		return my_completed_pages.size();
+		return my_page_analyzer.getPagesAnalyzed();
 	}
 	@Override
 	public int getPagesParsed(){

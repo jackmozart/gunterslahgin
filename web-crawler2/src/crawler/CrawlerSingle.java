@@ -13,7 +13,6 @@ public class CrawlerSingle extends CrawlerGeneric implements  Runnable {
 	  	my_page_parser.parse();
 	  	System.out.println("analyze queue now has: " + my_pages_to_analyze.size());
 	  	my_page_analyzer.analyze();
-	  	System.out.println("completed queue now has: " + my_completed_pages.size());
 	  	
 	  }
 	  

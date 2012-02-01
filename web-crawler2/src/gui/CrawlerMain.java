@@ -6,8 +6,7 @@ import java.util.Map;
 
 import page.Page;
 import crawler.Crawler;
-import crawler.CrawlerMulti;
-import crawler.CrawlerSingle;
+import crawler.CrawlerTuned;
 
 public class CrawlerMain {
 
@@ -17,7 +16,7 @@ public class CrawlerMain {
 	public static void main(String[] args) {
 		String[] keys = new String[] {"Hitler", "puppy", "the", "and"};
 		
-		Crawler c = new CrawlerMulti();
+		Crawler c = new CrawlerTuned();
 		try {
 			
 	    c.crawl(new Page(new URI("http://gamespot.com")), keys, 0);
@@ -28,16 +27,12 @@ public class CrawlerMain {
     }
 		
 		while(true){
-			int pages_crawled = 0;
-			int words_found = 0;
-			int urls_found = 0;
-			
-			
-			pages_crawled = c.getPagesCrawled();
-			words_found = c.getWordCount();
-			urls_found = c.getUrlsFound();
+			int pages_crawled = c.getPagesCrawled();
+			int words_found = c.getWordCount();
+			int urls_found = c.getUrlsFound();
 			Map<String, Integer> keyword_counts = c.getKeywordCounts();
-			
+			long time_parsed = c.getParseTime();
+			long time_elapsed= c.getTimeElapsed();
 			
 			StringBuilder output = new StringBuilder();
 			output.append("\n\n\nPages Retrieved: ").append(pages_crawled);
@@ -48,9 +43,9 @@ public class CrawlerMain {
 		  for(String k : keys){
 		  	output.append("\n  ").append(k).append("\t\t").append(keyword_counts.get(k) / (double) pages_crawled).append("\t").append(keyword_counts.get(k));
 		  }
-      output.append("\nAverage parse time per page:").append((double)c.getParseTime() / (double)1000000000 / (double) pages_crawled);
-      output.append("\nTotal running time:").append((double)c.getTimeElapsed() / (double)1000000000);
-      
+      output.append("\nAverage parse time per page:").append((double)time_parsed / 1000000000.0 / (double) pages_crawled);
+      output.append("\nTotal running time:").append((double)time_elapsed / 1000000000.0);
+      output.append("\nPages per second: ").append((double)pages_crawled / ((double)time_elapsed / 1000000000.0));
       System.out.print(output);
       
       try {
