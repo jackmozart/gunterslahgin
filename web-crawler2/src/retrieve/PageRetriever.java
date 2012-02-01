@@ -1,14 +1,13 @@
 package retrieve;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URLConnection;
+import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import net.htmlparser.jericho.Source;
 import page.Page;
 
 
@@ -17,6 +16,10 @@ public class PageRetriever {
 	 * A set of all pages that have been retrieved.
 	 */
 	private Set<Page> my_pages_retrieved;
+	/**
+	 * A set of all pages looked at.
+	 */
+	private Set<Page> my_pages_seen;
 	/**
 	 * A Queue of pages to retrieve that is thread-safe.
 	 */
@@ -31,6 +34,7 @@ public class PageRetriever {
 		my_pages_to_retrieve = the_pages_to_retrieve;
 		my_pages_to_parse = the_pages_to_parse;
 		my_pages_retrieved = new HashSet<Page>();
+		my_pages_seen = new HashSet<Page>();
 	}
 	
 	/**
@@ -45,42 +49,28 @@ public class PageRetriever {
 	    a_page = null;
     }
 		if(a_page != null){
-			if(my_pages_retrieved.add(a_page)){
+			if(my_pages_seen.add(a_page)){
 				
+				boolean good_page = true;
 				//System.out.println("Trying to get: " + a_page.getAddress().toString());
-				
-				StringBuilder html = new StringBuilder();
-				
-				html.append("");
-				
-				BufferedReader in;
 				try {
-					URLConnection url_conn =  a_page.getAddress().toURL().openConnection();
-					if(url_conn.getContentType().toLowerCase().contains("text/html") || url_conn.getContentType().toLowerCase().contains("text/plain")){
-						in = new BufferedReader(new InputStreamReader(a_page.getAddress().toURL().openStream()));
-						
-						while(in.ready()){
-							html.append(in.readLine().trim()).append(" ");
-						}
-					} else {
-						//System.out.println("Page did not contain text or html: " + a_page.getAddress().toString() + " was " + url_conn.getContentType());
-					}
-					
-				} catch (IOException e) {
-					//Do nothing, just discard the page.
-				}
+	        Source temp = new Source(a_page.getAddress().toURL());
+	        //temp.setLogger(null);
+	        a_page.setContents(temp);
+        } catch (MalformedURLException e) {
+	        //Ignore the bad page.
+        	good_page = false;
+        } catch (IOException e) {
+	        //Ignore the bad page.
+        	good_page = false;
+        }
 				
-				//If the page actually returned anything, then pass it on to the parser.
-				if(!html.toString().equals(""))
-				{
-					a_page.setContents(html.toString());	
-					
+				//System.out.println("Source Found: " + a_page.getContents().toString());
+				if(good_page){
 					try {
-						
 		        my_pages_to_parse.put(a_page);
-		        //System.out.println("Placing this on the parse queue: " + a_page.getAddress().toString());
 	        } catch (InterruptedException e) {
-		        //Do nothing, just return, we probably want to stop!
+		        //Prob just trying to exit
 	        }
 				}
 			}

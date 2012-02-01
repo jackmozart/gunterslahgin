@@ -34,8 +34,9 @@ public class PageAnalyzer {
 			//Do nothing, we probably want to stop.
 			a_page = null;
 		}
+		
 		if(a_page != null){
-					
+			//System.out.println("Trying to analyze: " + a_page.getAddress());
 			for(String word:a_page.getWords()){
 				if(my_keywords.containsKey(word)){
 					my_keywords.put(word, my_keywords.get(word) + 1);

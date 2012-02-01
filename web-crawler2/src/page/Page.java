@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.htmlparser.jericho.Source;
+
 /**
  * This is a page class!
  * @author jim
@@ -15,7 +17,7 @@ public class Page {
 	/**
 	 * The contents of the page, whether it be html or plain text.
 	 */
-	private String my_contents;
+	private Source my_contents;
 	/**
 	 * The address of the page.
 	 */
@@ -52,14 +54,14 @@ public class Page {
 	 * Gets the contents of the page.
 	 * @return The contents of the page.
 	 */
-	public String getContents() {
+	public Source getContents() {
   	return my_contents;
   }
 	/**
 	 * Sets the contents of the page.
 	 * @param the_contents The contents of the page.
 	 */
-	public void setContents(String the_contents) {
+	public void setContents(Source the_contents) {
   	my_contents = the_contents;
   }
 	/**

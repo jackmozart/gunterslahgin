@@ -7,6 +7,7 @@ import java.util.Map;
 import page.Page;
 import crawler.Crawler;
 import crawler.CrawlerMulti;
+import crawler.CrawlerSingle;
 
 public class CrawlerMain {
 
@@ -19,7 +20,7 @@ public class CrawlerMain {
 		Crawler c = new CrawlerMulti();
 		try {
 			
-	    c.crawl(new Page(new URI("http://en.wikipedia.com")), keys, 0);
+	    c.crawl(new Page(new URI("http://gamespot.com")), keys, 0);
 	    
     } catch (URISyntaxException e) {
 	    // TODO Auto-generated catch block
@@ -45,7 +46,7 @@ public class CrawlerMain {
 		  output.append("\nKeyword\t\tAvg. hits per page\tTotal hits");
 		  
 		  for(String k : keys){
-		  	output.append("\n  ").append(k).append("\t").append(keyword_counts.get(k) / (double) pages_crawled).append("\t").append(keyword_counts.get("k"));
+		  	output.append("\n  ").append(k).append("\t\t").append(keyword_counts.get(k) / (double) pages_crawled).append("\t").append(keyword_counts.get(k));
 		  }
       output.append("\nAverage parse time per page:").append((double)c.getParseTime() / (double)1000000000 / (double) pages_crawled);
       output.append("\nTotal running time:").append((double)c.getTimeElapsed() / (double)1000000000);
@@ -53,7 +54,7 @@ public class CrawlerMain {
       System.out.print(output);
       
       try {
-	      Thread.sleep(1000);
+	      Thread.sleep(3000);
       } catch (InterruptedException e) {
 	      // TODO Auto-generated catch block
 	      e.printStackTrace();

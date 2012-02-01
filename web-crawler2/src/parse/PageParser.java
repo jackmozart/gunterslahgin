@@ -97,29 +97,34 @@ public class PageParser {
 	    a_page = null;
     }
 		if(a_page != null){
+			
+			//System.out.println("Trying to parse: " + a_page.getAddress());
 			long start_time = System.nanoTime();
 			
-			Source page_source = new Source(a_page.getContents());
+			a_page.getContents().fullSequentialParse();
 
-			page_source.fullSequentialParse();
-
-			List<Element> linkElements = page_source
+			List<Element> linkElements = a_page.getContents()
 					.getAllElements(HTMLElementName.A);
 			for (Element linkElement : linkElements) {
 				String href = linkElement.getAttributeValue("href");
 				
 				if (href == null) continue;
+				try{
+					a_page.addLink(a_page.getAddress().resolve(href).toString());
+				} catch (IllegalArgumentException ill_arg_exc){
+					//Was a bad link, just ignore it and move on.
+				}
 				
-				a_page.addLink(a_page.getAddress().resolve(href).toString());
 			}
 
-			String page_text = page_source.getTextExtractor().toString();
+			String page_text = a_page.getContents().getTextExtractor().toString();
 
 			Pattern word_pat = Pattern.compile("\\b(\\w+)\\b");
 			Matcher word_mat = word_pat.matcher(page_text);
 			
 			while (word_mat.find()) {
 				a_page.addWord(word_mat.group(1));
+				
 			}
 			
 			long total_time = System.nanoTime() - start_time;
@@ -127,19 +132,24 @@ public class PageParser {
 			synchronized(this){
 				my_pages_parsed++;
 				my_page_parse_time +=total_time;
+				my_word_count += a_page.getWords().size();
+				my_urls_found += a_page.getLinks().size();
 			}
 			
 			for(String s:a_page.getLinks()){
 				try {
 	        my_pages_to_retrieve.put(new Page(new URI(s)));
-	        my_pages_to_analyze.put(a_page);
         } catch (InterruptedException e) {
 	        //Do nothing, we probably want to stop.
         } catch (URISyntaxException e) {
 	        //Invalid url, just skip it.
         }
 			}
-			
+			try {
+	      my_pages_to_analyze.put(a_page);
+      } catch (InterruptedException e) {
+	      //Do nothing, we probably want to stop.
+      }
 			
 		}
 		
