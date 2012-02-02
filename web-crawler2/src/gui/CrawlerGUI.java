@@ -2,32 +2,36 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
+
+
+import org.omg.CORBA.RepositoryIdHelper;
+
+import page.Page;
+
+import crawler.Crawler;
+import crawler.CrawlerMulti;
+import crawler.CrawlerSingle;
 
 /**
  * 
@@ -36,6 +40,8 @@ import javax.swing.border.EtchedBorder;
  */
 @SuppressWarnings("serial")
 public class CrawlerGUI extends JFrame implements ActionListener {
+
+	private static final Color LABEL_COLOR = Color.BLUE;
 
 	private static final int NUM_KEYWORDS = 10;
 
@@ -66,22 +72,27 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 	private ArrayList<JLabel> my_totalHit;
 
 	private JPanel my_contentPane;
-	
+
 	private JLabel my_totalTimeLabel;
-	
+
 	private JLabel my_pageTimeLabel;
-	
+
 	private JLabel my_pagesProccesedLabel;
+
+	private JLabel my_avgUrlLabel;
+
+	private Crawler my_crawler;
 
 	public CrawlerGUI() {
 		super();
-		
+
 		my_contentPane = new JPanel();
 		my_contentPane.setLayout(new BorderLayout());
 		this.setContentPane(my_contentPane);
 		this.setResizable(false);
-		this.setLocationRelativeTo(null);
-		
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		// this.setLocationRelativeTo(null);
+
 		my_keywordList = new ArrayList<JTextField>();
 
 		my_hitPerPage = new ArrayList<JLabel>();
@@ -100,13 +111,13 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		// adds the keyword input pannel
 		keyWordPanel();
 		my_contentPane.add(my_keywordPanel, BorderLayout.NORTH);
-		
+
 		// add the stats panel
 		this.add(createStatsPane(), BorderLayout.CENTER);
 
 		// adds panel to the window
 		my_runPanel = new JPanel(new FlowLayout());
-		my_contentPane.add(my_runPanel,BorderLayout.SOUTH);
+		my_contentPane.add(my_runPanel, BorderLayout.SOUTH);
 		my_runPanel.setBackground(Color.white);
 
 		// make input spots
@@ -152,16 +163,16 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		// make output label
 		JLabel togleLabel = new JLabel();
 		togleLabel.setText("Multi thread");
-		togleLabel.setToolTipText("If checked the program will run muli threaded.");
+		togleLabel
+				.setToolTipText("If checked the program will run muli threaded.");
 		my_runPanel.add(togleLabel);
-		
-		
+
 		my_threadTogle = new JCheckBox();
-		my_threadTogle.setToolTipText("If checked the program will run muli threaded.");
+		my_threadTogle
+				.setToolTipText("If checked the program will run muli threaded.");
 		my_threadTogle.setSelected(true);
 		my_runPanel.add(my_threadTogle);
-		
-		
+
 		//
 
 		this.pack();
@@ -169,13 +180,58 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent the_event) {
+		// run button presed begin a run
 		if (the_event.getSource() == my_runButton) {
-			System.out.print("run button pressed");
 
+			Crawler a_Crawler;
+			int max_pages = normalizeNumPages();
+			Page seed = normalizeUrl();
+
+			// ensure that input is valid
+			if (max_pages != -1 && seed != null) {
+
+				// get the keywords from the user
+				String [] keywords = new String [my_keywordList.size()];
+				int i = 0;
+				for (JTextField a_keyWord : my_keywordList) {
+					keywords[i] =  a_keyWord.getText();
+					i++;
+				}
+
+				if (my_threadTogle.isSelected()) {// multi threaded is enabled
+					my_crawler = new CrawlerMulti();
+				} else {// run single threaded
+					my_crawler = new CrawlerSingle();
+				}
+				my_crawler
+						.crawl(seed, keywords, max_pages);
+			}
 		} else if (the_event.getSource() == my_stopButton) {
-			System.out.print("Stop button pressed");
+			if (my_crawler == null) {
+				errorWindow("No run is active");
+			} else {
+				my_crawler.stop();
+				// display final output.
+				displayResults();
+			}
 		}
 		this.pack();
+	}
+
+	private void displayResults() {
+		my_totalTimeLabel.setText(my_crawler.getTimeElapsed()+ "");
+		int pages_paresed = my_crawler.getPagesParsed();
+		my_pagesProccesedLabel.setText(pages_paresed + "");
+		my_pageTimeLabel.setText(my_crawler.getParseTime() + " ");
+		my_avgUrlLabel.setText( (my_crawler.getUrlsFound()/pages_paresed) + "");
+		
+		Iterator<JLabel> perPageIter = my_hitPerPage.iterator();
+		Iterator<JLabel> totalHitIter =  my_totalHit.iterator();
+		for(Map.Entry<String, Integer> a_entry:my_crawler.getKeywordCounts().entrySet()){
+			a_entry.getValue();
+			
+		}
+		
 	}
 
 	/**
@@ -207,69 +263,107 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 			my_keywordList.add(key_text1);
 
 			JLabel hitPageLabel = new JLabel();
-			hitPageLabel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-			hitPageLabel.setBackground(Color.GRAY);
+			hitPageLabel.setBorder(BorderFactory
+					.createEtchedBorder(EtchedBorder.LOWERED));
+			hitPageLabel.setBackground(LABEL_COLOR);
 			my_keywordPanel.add(hitPageLabel);
 			my_hitPerPage.add(hitPageLabel);
 
-
 			JLabel hitSumLabel = new JLabel();
-			hitSumLabel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-			hitSumLabel.setBackground(Color.GRAY);
+			hitSumLabel.setBorder(BorderFactory
+					.createEtchedBorder(EtchedBorder.LOWERED));
+			hitSumLabel.setBackground(LABEL_COLOR);
 			my_keywordPanel.add(hitSumLabel);
 			my_totalHit.add(hitSumLabel);
 		}
 	}
-	
-	private JPanel createStatsPane(){
+
+	/**
+	 * @return Creates a panel with 3 buttons and 3 labels in a grid layout to
+	 *         display total time, time per page, and current number of pages
+	 *         paresed.
+	 */
+	private JPanel createStatsPane() {
 		JPanel statsPane = new JPanel();
 		statsPane.setBackground(Color.white);
 		statsPane.setLayout(new GridLayout());
-		
 
-		
-		//current pages parsed 
+		// current pages parsed
 		JLabel pagesLabel = new JLabel();
 		pagesLabel.setText("Pages Paresed:");
 		statsPane.add(pagesLabel);
-		
+
 		JLabel pagesParsed = new JLabel();
-		pagesParsed.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		pagesParsed.setBorder(BorderFactory
+				.createEtchedBorder(EtchedBorder.LOWERED));
+		pagesParsed.setBackground(LABEL_COLOR);
 		statsPane.add(pagesParsed);
-		
+
 		// Time per page
 		JLabel pageTimeLabel = new JLabel();
 		pageTimeLabel.setText("Time to Parse:");
 		statsPane.add(pageTimeLabel);
-		
-		JLabel pageTime = new JLabel();
-		pageTime.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-		statsPane.add(pageTime);
-		
-		//Total elapsed time labels
+
+		my_pageTimeLabel = new JLabel();
+		my_pageTimeLabel.setBorder(BorderFactory
+				.createEtchedBorder(EtchedBorder.LOWERED));
+		my_pageTimeLabel.setBackground(LABEL_COLOR);
+		statsPane.add(my_pageTimeLabel);
+
+		// Total elapsed time labels
 		JLabel timeLabel = new JLabel();
 		timeLabel.setText("Total Time:");
 		statsPane.add(timeLabel);
-		
-		JLabel elapsedTime = new JLabel();
-		elapsedTime.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-		statsPane.add(elapsedTime);
-		
-		
+
+		my_totalTimeLabel = new JLabel();
+		my_totalTimeLabel.setBorder(BorderFactory
+				.createEtchedBorder(EtchedBorder.LOWERED));
+		my_totalTimeLabel.setBackground(LABEL_COLOR);
+		statsPane.add(my_totalTimeLabel);
+
+		// avg urls per page
+		JLabel avgUrlLabel = new JLabel();
+		avgUrlLabel.setText("Avg Url/page");
+		avgUrlLabel.setToolTipText("Average urls found on a page.");
+		statsPane.add(avgUrlLabel);
+
+		my_avgUrlLabel = new JLabel();
+		my_avgUrlLabel.setBorder(BorderFactory
+				.createEtchedBorder(EtchedBorder.LOWERED));
+		my_avgUrlLabel.setBackground(LABEL_COLOR);
+		statsPane.add(my_avgUrlLabel);
+
 		return statsPane;
 	}
 
+	/**
+	 * Sets the frame to true.
+	 */
 	public void start() {
 		this.setVisible(true);
 	}
 
-	public String normalizeUrl() {
+	/**
+	 * Trims input url and attempts to make a page. If the attempt the method
+	 * will display error message and return null.
+	 * 
+	 * @return
+	 */
+	private Page normalizeUrl() {
 		String input = my_input_url.getText();
 		input.trim();
 
 		// checkformat
+		try {
+			URI seed_uri = new URI(input);
+			Page seed_page = new Page(seed_uri);
+			return seed_page;
+		} catch (Exception e) {
+			// TODO: handle exception
+			errorWindow("You did not enter a valid seed addres.");
+		}
+		return null;
 
-		return input;
 	}
 
 	public int normalizeNumPages() {
@@ -279,15 +373,24 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		int result = -1;
 		try {
 			result = java.lang.Integer.parseInt(input);
+			if (result < 0) {
+				throw new NumberFormatException();
+			}
 
 		} catch (NumberFormatException e) {
-
+			errorWindow("Max pages must be a Integer > 0");
 		}
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param message
+	 *            The message to display on a java message dialog.
+	 */
 	public void errorWindow(String message) {
-
+		JOptionPane.showMessageDialog(new JFrame(), message,
+				"Does not compute", JOptionPane.ERROR_MESSAGE);
 	}
 
 }

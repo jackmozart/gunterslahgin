@@ -83,6 +83,7 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 	public long getParseTime(){
 		return my_page_parser.getPageParseTime();
 	}
+
 	@Override
 	public long getTimeElapsed(){
 		return System.nanoTime() - my_crawl_start_time;
