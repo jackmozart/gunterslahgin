@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -25,7 +24,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
 
-import org.omg.CORBA.RepositoryIdHelper;
 
 import page.Page;
 
@@ -183,7 +181,6 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		// run button presed begin a run
 		if (the_event.getSource() == my_runButton) {
 
-			Crawler a_Crawler;
 			int max_pages = normalizeNumPages();
 			Page seed = normalizeUrl();
 
@@ -221,14 +218,22 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 	private void displayResults() {
 		my_totalTimeLabel.setText(my_crawler.getTimeElapsed()+ "");
 		int pages_paresed = my_crawler.getPagesParsed();
+		
+		if(pages_paresed == 0){//protect against divide by zero eror
+			
+			pages_paresed = 1;
+		}
+		
 		my_pagesProccesedLabel.setText(pages_paresed + "");
 		my_pageTimeLabel.setText(my_crawler.getParseTime() + " ");
-		my_avgUrlLabel.setText( (my_crawler.getUrlsFound()/pages_paresed) + "");
+		my_avgUrlLabel.setText( ( "" +my_crawler.getUrlsFound()/ pages_paresed) );
 		
 		Iterator<JLabel> perPageIter = my_hitPerPage.iterator();
 		Iterator<JLabel> totalHitIter =  my_totalHit.iterator();
 		for(Map.Entry<String, Integer> a_entry:my_crawler.getKeywordCounts().entrySet()){
-			a_entry.getValue();
+			Integer hits = a_entry.getValue();
+			perPageIter.next().setText(""+ (hits/pages_paresed));
+			totalHitIter.next().setText(""+hits);
 			
 		}
 		
@@ -293,11 +298,11 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		pagesLabel.setText("Pages Paresed:");
 		statsPane.add(pagesLabel);
 
-		JLabel pagesParsed = new JLabel();
-		pagesParsed.setBorder(BorderFactory
+		my_pagesProccesedLabel = new JLabel();
+		my_pagesProccesedLabel.setBorder(BorderFactory
 				.createEtchedBorder(EtchedBorder.LOWERED));
-		pagesParsed.setBackground(LABEL_COLOR);
-		statsPane.add(pagesParsed);
+		my_pagesProccesedLabel.setBackground(LABEL_COLOR);
+		statsPane.add(my_pagesProccesedLabel);
 
 		// Time per page
 		JLabel pageTimeLabel = new JLabel();
