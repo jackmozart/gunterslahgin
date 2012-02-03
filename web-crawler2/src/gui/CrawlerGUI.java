@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -11,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -30,6 +32,7 @@ import page.Page;
 import crawler.Crawler;
 import crawler.CrawlerMulti;
 import crawler.CrawlerSingle;
+import crawler.CrawlerTuned;
 
 /**
  * 
@@ -43,7 +46,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 	private static final int NUM_KEYWORDS = 10;
 
-	public static final String DEFULT_START_PAGE = "www.joindota.com";
+	public static final String DEFULT_START_PAGE = "http://en.wikipedia.org/wiki/Seppuku";
 
 	public static final String DEFULT_SEED = "100";
 
@@ -81,9 +84,11 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 	private Crawler my_crawler;
 
+	private List<String> my_curKeywordsList;
+
 	public CrawlerGUI() {
 		super();
-
+		my_curKeywordsList = new ArrayList<String>();
 		my_contentPane = new JPanel();
 		my_contentPane.setLayout(new BorderLayout());
 		this.setContentPane(my_contentPane);
@@ -191,14 +196,17 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 				String [] keywords = new String [my_keywordList.size()];
 				int i = 0;
 				for (JTextField a_keyWord : my_keywordList) {
-					keywords[i] =  a_keyWord.getText();
+					String temp = a_keyWord.getText();
+					keywords[i] = temp;
+					my_curKeywordsList.add(temp);
+					a_keyWord.setEnabled(false);
 					i++;
 				}
 
 				if (my_threadTogle.isSelected()) {// multi threaded is enabled
-					my_crawler = new CrawlerMulti();
+					my_crawler = new CrawlerTuned();
 				} else {// run single threaded
-					my_crawler = new CrawlerSingle();
+					my_crawler = new CrawlerSingle() ;
 				}
 				my_crawler
 						.crawl(seed, keywords, max_pages);
@@ -210,13 +218,20 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 				my_crawler.stop();
 				// display final output.
 				displayResults();
+				
+				//re enable all labels
+				for (JTextField a_keyWord : my_keywordList) {
+					a_keyWord.setEnabled(true);
+				}
+				
+				my_curKeywordsList.clear();
 			}
 		}
 		this.pack();
 	}
 
 	private void displayResults() {
-		my_totalTimeLabel.setText(my_crawler.getTimeElapsed()+ "");
+		my_totalTimeLabel.setText((double)my_crawler.getTimeElapsed() / 1000000000.0+ "");
 		int pages_paresed = my_crawler.getPagesParsed();
 		
 		if(pages_paresed == 0){//protect against divide by zero eror
@@ -225,15 +240,21 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		}
 		
 		my_pagesProccesedLabel.setText(pages_paresed + "");
-		my_pageTimeLabel.setText(my_crawler.getParseTime() + " ");
-		my_avgUrlLabel.setText( ( "" +my_crawler.getUrlsFound()/ pages_paresed) );
+		my_pageTimeLabel.setText(((double) my_crawler.getParseTime() / 1000000000.0) / pages_paresed+ " ");
+		my_avgUrlLabel.setText( ( "" +(double) my_crawler.getUrlsFound()/(double) pages_paresed) );
 		
-		Iterator<JLabel> perPageIter = my_hitPerPage.iterator();
-		Iterator<JLabel> totalHitIter =  my_totalHit.iterator();
-		for(Map.Entry<String, Integer> a_entry:my_crawler.getKeywordCounts().entrySet()){
-			Integer hits = a_entry.getValue();
-			perPageIter.next().setText(""+ (hits/pages_paresed));
-			totalHitIter.next().setText(""+hits);
+		Map<String, Integer> wordCounts = my_crawler.getKeywordCounts();
+		for(int i = 0; i < my_curKeywordsList.size(); i++){
+			String a_word = my_curKeywordsList.get(i);
+			Integer count = wordCounts.get(a_word);
+			if(count != null){
+				my_hitPerPage.get(i).setText("" + ((double) count / (double)pages_paresed));
+				my_totalHit.get(i).setText("" + count);
+			}else{
+				System.out.print(":(");
+			}
+
+			
 			
 		}
 		
