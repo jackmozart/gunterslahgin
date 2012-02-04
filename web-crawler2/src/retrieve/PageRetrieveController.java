@@ -1,5 +1,7 @@
 package retrieve;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -7,9 +9,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.htmlparser.Parser;
-import org.htmlparser.beans.StringBean;
-import org.htmlparser.util.ParserException;
+import org.jsoup.Jsoup;
 
 import page.Page;
 import crawler.CrawlerTuned;
@@ -23,7 +23,9 @@ public class PageRetrieveController extends Thread {
 	private Set<Page> my_pages_seen;
 	private Stopbit my_stop;
 	private List<PageRetriever> my_retrievers;
-
+	
+	private int my_mutex;
+	
 	public PageRetrieveController(CrawlerTuned the_crawler, BlockingQueue<Page> the_pages_to_retrieve,
       BlockingQueue<Page> the_pages_to_parse, Stopbit the_stop) {
 	  my_crawler = the_crawler;
@@ -70,6 +72,7 @@ public class PageRetrieveController extends Thread {
   }
 	
 	private class PageRetriever extends Thread{
+		private static final int PAGE_TIMEOUT = 1000;
 		private Stopbit t_stop;
 		
 		private PageRetriever(){
@@ -93,36 +96,46 @@ public class PageRetrieveController extends Thread {
 		private void parse(){
 			Page a_page;
 	    try {
-		    a_page = my_pages_to_retrieve.poll(1, TimeUnit.SECONDS);
+	    	synchronized(this){
+	    	a_page = my_pages_to_retrieve.poll(1, TimeUnit.SECONDS);
+		    up();
+	    	}
 	    } catch (InterruptedException e1) {
 		    a_page = null;
 	    }
+	    
 			if(a_page != null){
 				if(add_seen_page(a_page)){
 					
-					boolean good_page = true;
 					//System.out.println("Trying to get: " + a_page.getAddress().toString());
 					try {
-						Parser a_parser = new Parser(a_page.getAddress().toString());
-						StringBean sb = new StringBean();
-						sb.setURL(a_page.getAddress().toString());
-						a_page.setContents(sb.getStrings());
-		        a_page.setParser(a_parser);
-	        } catch (ParserException e) {
-	          good_page = false;
-          }
+						String html = Jsoup.parse(a_page.getAddress().toURL(), PAGE_TIMEOUT).html();
+						a_page.setContents(html);
+						//System.err.format("\nFound html:", html.trim().replace("\n", " "));
+						my_pages_to_parse.put(a_page);
+          } catch (MalformedURLException e) {
+	          //We were given a bad url.
+          } catch (IOException e) {
+	          //Could not get the page.          
+          } catch (InterruptedException e) {
+          	//we prob just want to exit
+          } //in any case if an excpetiong is thrown just move on to the next page.
 					
-					//System.out.println("Source Found: " + a_page.getContents().toString());
-					if(good_page){
-						try {
-			        my_pages_to_parse.put(a_page);
-		        } catch (InterruptedException e) {
-			        //Prob just trying to exit
-		        }
-					}
 				}
 			}
+			down();
 		}
 	}
+
+	private synchronized void up(){
+		my_mutex++;
+	}
+	private synchronized void down(){
+		my_mutex--;
+	}
+	
+	public synchronized boolean isRunning() {
+	  return my_mutex > 0;
+  }
 
 }

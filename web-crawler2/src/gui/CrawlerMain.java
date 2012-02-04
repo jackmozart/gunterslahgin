@@ -6,7 +6,7 @@ import java.util.Map;
 
 import page.Page;
 import crawler.Crawler;
-import crawler.CrawlerTuned;
+import crawler.CrawlerSingle;
 
 public class CrawlerMain {
 
@@ -14,12 +14,12 @@ public class CrawlerMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String[] keys = new String[] {"Hitler", "puppy", "the", "and"};
+		String[] keys = new String[] {"coconuts", "emeralds", "cliff", "rock"};
 		
-		CrawlerTuned c = new CrawlerTuned();
+		Crawler c = new CrawlerSingle();
 		try {
 			
-	    c.crawl(new Page(new URI("http://en.wikipedia.com")), keys, 0);
+	    c.crawl(new Page(new URI("http://css.insttech.washington.edu/~mealden/")), keys, 0);
 	    
     } catch (URISyntaxException e) {
 	    // TODO Auto-generated catch block
@@ -46,9 +46,12 @@ public class CrawlerMain {
       output.append("\nAverage parse time per page:").append((double)time_parsed / 1000000000.0 / (double) pages_crawled);
       output.append("\nTotal running time:").append((double)time_elapsed / 1000000000.0);
       output.append("\nPages per second: ").append((double)pages_crawled / ((double)time_elapsed / 1000000000.0));
-      output.append("\nRetrievers: ").append(c.getNumRet()).append("\tParsers: ").append(c.getNumPar()).append("\tAnalyzers: ").append(c.getNumAna());
+      //output.append("\nRetrievers: ").append(c.getNumRet()).append("\tParsers: ").append(c.getNumPar()).append("\tAnalyzers: ").append(c.getNumAna());
       System.out.print(output);
-      
+      if(c.isDone() && time_elapsed > 10000000000l){
+      	c.stop();
+      	break;
+      }
       try {
 	      Thread.sleep(3000);
       } catch (InterruptedException e) {

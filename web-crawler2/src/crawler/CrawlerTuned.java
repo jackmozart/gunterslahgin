@@ -124,5 +124,15 @@ public class CrawlerTuned implements Crawler {
 	public synchronized void releaseThread(){
 		my_used_threads--;
 	}
+
+	@Override
+  public boolean isDone() {
+	  boolean result = false;
+	  if(!my_page_analyzer.isRunning() && !my_page_parser.isRunning() && !my_page_retriever.isRunning() &&
+	  		my_pages_to_analyze.isEmpty() && my_pages_to_parse.isEmpty() && my_pages_to_retrieve.isEmpty()){
+	  	result = true;
+	  }
+	  return result;
+  }
 	
 }

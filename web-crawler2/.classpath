@@ -7,5 +7,10 @@
 			<attribute name="javadoc_location" value="file:/home/jim/Dropbox/CodeWorkspace/Java/TCSS422/web-crawler2/docs/javadoc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="jsoup-1.6.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/web-crawler2/jsoup-1.6.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

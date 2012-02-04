@@ -49,4 +49,9 @@ public interface Crawler {
 	 * Stops the crawler by activating the stop bit.  
 	 */
 	void stop();
+	/**
+	 * Whether or not the crawler is done crawling.
+	 * @return  Whether or not the crawler is done crawling.
+	 */
+	boolean isDone();
 }

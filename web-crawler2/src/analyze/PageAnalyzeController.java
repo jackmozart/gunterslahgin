@@ -22,6 +22,8 @@ public class PageAnalyzeController extends Thread{
 	
 	private List<PageAnalyzer> my_analyzers;
 	
+	private int my_mutex;
+	
 	public PageAnalyzeController(CrawlerTuned the_crawler,BlockingQueue<Page> the_pages_to_analyze, String[] the_keywords,
       Stopbit the_stop) {
 		my_crawler = the_crawler;
@@ -100,7 +102,10 @@ public class PageAnalyzeController extends Thread{
 		private void analyze(){
 			Page a_page;
 			try{
+				synchronized(this){
 				a_page = my_pages_to_analyze.poll(1, TimeUnit.SECONDS);
+				up();
+				}
 			}catch(InterruptedException e){
 				//Do nothing, we probably want to stop.
 				a_page = null;
@@ -117,7 +122,19 @@ public class PageAnalyzeController extends Thread{
 			  	my_pages_analyzed++;
 			  }
 			}
+			down();
 		}
 	}
+	
+	private synchronized void up(){
+		my_mutex++;
+	}
+	private synchronized void down(){
+		my_mutex--;
+	}
+	
+	public synchronized boolean isRunning() {
+	  return my_mutex > 0;
+  }
 	
 }

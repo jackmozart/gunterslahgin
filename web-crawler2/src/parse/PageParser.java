@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.htmlparser.Node;
 import org.htmlparser.filters.AndFilter;
@@ -12,6 +14,10 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import page.Page;
 
@@ -100,30 +106,28 @@ public class PageParser {
     }
 		if(a_page != null){
 			
-			//System.out.println("Trying to parse: " + a_page.getAddress());
+		//System.out.println("Trying to parse: " + a_page.getAddress());
 			long start_time = System.nanoTime();
 			
-			try {
-        NodeList nodes = a_page.getParser().parse(new AndFilter(new TagNameFilter("A"), new HasAttributeFilter("HREF")));
-        
-        for(Node node : nodes.toNodeArray()){
-        	if(node instanceof LinkTag){
-        		LinkTag linknode = (LinkTag)node;
-        		if(linknode.isHTTPLikeLink() && !linknode.isJavascriptLink()){
-        			a_page.addLink(a_page.getAddress().resolve(linknode.extractLink()).toString());
-        		}
-        	}
-        }
-        
-      } catch (ParserException e1) {
-        //No hard feelings if the parser fails.
-      } catch (IllegalArgumentException e2){
-      	//The link couldn't be resolved, probably had bad chars in it.
-      }
+			Document doc = Jsoup.parse(a_page.getContents(), a_page.getAddress().toString());
 			
-			for(String word : a_page.getContents().split(" ")) {
-				a_page.addWord(word);
+			Elements links = doc.select("a[href]");
+			
+			for(Element link : links){
+				a_page.addLink(link.absUrl("href"));
+				//System.err.format("\nAdding \"%s\" to the queue", link.absUrl("href"));
 			}
+			
+			String plain_text = doc.body().text();
+			//System.err.format("\nBody text of %s is %s:", a_page.getAddress().toString(), plain_text);
+			
+			Pattern word_pat = Pattern.compile("\\b\\w+\\b");
+			Matcher word_mat = word_pat.matcher(plain_text);
+			while(word_mat.find()){
+				a_page.addWord(word_mat.group());
+				//System.err.format("\nAdding \"%s\" to the word_list", word_mat.group());
+			}
+			
 			
 			long total_time = System.nanoTime() - start_time;
 			

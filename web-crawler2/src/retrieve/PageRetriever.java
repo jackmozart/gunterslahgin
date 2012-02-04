@@ -1,5 +1,7 @@
 package retrieve;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -8,11 +10,13 @@ import java.util.concurrent.TimeUnit;
 import org.htmlparser.Parser;
 import org.htmlparser.beans.StringBean;
 import org.htmlparser.util.ParserException;
+import org.jsoup.Jsoup;
 
 import page.Page;
 
 
 public class PageRetriever {
+	private static final int PAGE_TIMEOUT = 1000;
 	/**
 	 * A set of all pages that have been retrieved.
 	 */
@@ -52,26 +56,19 @@ public class PageRetriever {
 		if(a_page != null){
 			if(my_pages_seen.add(a_page)){
 				
-				boolean good_page = true;
-				//System.out.println("Trying to get: " + a_page.getAddress().toString());
+			//System.out.println("Trying to get: " + a_page.getAddress().toString());
 				try {
-					Parser a_parser = new Parser(a_page.getAddress().toString());
-					StringBean sb = new StringBean();
-					sb.setURL(a_page.getAddress().toString());
-					a_page.setContents(sb.getStrings());
-	        a_page.setParser(a_parser);
-        } catch (ParserException e) {
-          good_page = false;
-        }
-				
-				//System.out.println("Source Found: " + a_page.getContents().toString());
-				if(good_page){
-					try {
-		        my_pages_to_parse.put(a_page);
-	        } catch (InterruptedException e) {
-		        //Prob just trying to exit
-	        }
-				}
+					String html = Jsoup.parse(a_page.getAddress().toURL(), PAGE_TIMEOUT).html();
+					a_page.setContents(html);
+					//System.err.format("\nFound html:", html.trim().replace("\n", " "));
+					my_pages_to_parse.put(a_page);
+        } catch (MalformedURLException e) {
+          //We were given a bad url.
+        } catch (IOException e) {
+          //Could not get the page.          
+        } catch (InterruptedException e) {
+        	//we prob just want to exit
+        } //in any case if an excpetiong is thrown just move on to the next page.
 			}
 		}
 	}
