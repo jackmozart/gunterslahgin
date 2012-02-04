@@ -7,9 +7,6 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.htmlparser.Parser;
-import org.htmlparser.beans.StringBean;
-import org.htmlparser.util.ParserException;
 import org.jsoup.Jsoup;
 
 import page.Page;

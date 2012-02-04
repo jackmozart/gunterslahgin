@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.htmlparser.Parser;
-
 /**
  * This is a page class!
  * @author jim
@@ -18,10 +16,7 @@ public class Page {
 	 * The contents of the page, whether it be html or plain text.
 	 */
 	private String my_contents;
-	/**
-	 * 
-	 */
-	private Parser my_parser;
+
 	/**
 	 * The address of the page.
 	 */
@@ -68,19 +63,6 @@ public class Page {
 	public void setContents(String string) {
   	my_contents = string;
   }
-	/**
-	 * Gets the html parser object used for retrieving the html from the page and then parsing it.
-	 * @return The html parser.
-	 */
-	public Parser getParser(){
-		return my_parser;
-	}
-	/**
-	 * Sets the parser object, preloaded with a destination address;
-	 */
-	public void setParser(Parser the_parser){
-		my_parser = the_parser;
-	}
 	
 	/**
 	 * Gets the address of the page.
