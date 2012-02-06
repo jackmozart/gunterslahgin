@@ -80,6 +80,8 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 	private List<String> my_curKeywordsList;
 
+	private JLabel my_avgWordLabel;
+
 	public CrawlerGUI() {
 		super();
 		my_curKeywordsList = new ArrayList<String>();
@@ -190,7 +192,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 				String [] keywords = new String [my_keywordList.size()];
 				int i = 0;
 				for (JTextField a_keyWord : my_keywordList) {
-					String temp = a_keyWord.getText();
+					String temp = a_keyWord.getText().trim();			
 					keywords[i] = temp;
 					my_curKeywordsList.add(temp);
 					a_keyWord.setEnabled(false);
@@ -236,6 +238,8 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_pagesProccesedLabel.setText(pages_paresed + "");
 		my_pageTimeLabel.setText(((double) my_crawler.getParseTime() / 1000000000.0) / pages_paresed+ " ");
 		my_avgUrlLabel.setText( ( "" +(double) my_crawler.getUrlsFound()/(double) pages_paresed) );
+		my_avgWordLabel.setText((""+ (double) my_crawler.getWordCount()/(double) pages_paresed));
+		
 		
 		Map<String, Integer> wordCounts = my_crawler.getKeywordCounts();
 		for(int i = 0; i < my_curKeywordsList.size(); i++){
@@ -309,8 +313,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		statsPane.setLayout(new GridLayout());
 
 		// current pages parsed
-		JLabel pagesLabel = new JLabel();
-		pagesLabel.setText("Pages Paresed:");
+		JLabel pagesLabel = new JLabel("Pages Paresed ",JLabel.RIGHT);
 		statsPane.add(pagesLabel);
 
 		my_pagesProccesedLabel = new JLabel();
@@ -320,8 +323,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		statsPane.add(my_pagesProccesedLabel);
 
 		// Time per page
-		JLabel pageTimeLabel = new JLabel();
-		pageTimeLabel.setText("Time to Parse:");
+		JLabel pageTimeLabel = new JLabel("Time to Parse ",JLabel.RIGHT);
 		statsPane.add(pageTimeLabel);
 
 		my_pageTimeLabel = new JLabel();
@@ -331,8 +333,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		statsPane.add(my_pageTimeLabel);
 
 		// Total elapsed time labels
-		JLabel timeLabel = new JLabel();
-		timeLabel.setText("Total Time:");
+		JLabel timeLabel = new JLabel("Total Time ",JLabel.RIGHT);
 		statsPane.add(timeLabel);
 
 		my_totalTimeLabel = new JLabel();
@@ -342,8 +343,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		statsPane.add(my_totalTimeLabel);
 
 		// avg urls per page
-		JLabel avgUrlLabel = new JLabel();
-		avgUrlLabel.setText("Avg Url/page");
+		JLabel avgUrlLabel = new JLabel("Avg Url/page ",JLabel.RIGHT);
 		avgUrlLabel.setToolTipText("Average urls found on a page.");
 		statsPane.add(avgUrlLabel);
 
@@ -352,6 +352,17 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 				.createEtchedBorder(EtchedBorder.LOWERED));
 		my_avgUrlLabel.setBackground(LABEL_COLOR);
 		statsPane.add(my_avgUrlLabel);
+		
+		//words per page
+		JLabel avgWordsLabel = new JLabel("Avg Words/Page ",JLabel.RIGHT);
+		avgWordsLabel.setToolTipText("Average words found on a page.");
+		statsPane.add(avgWordsLabel);
+
+		my_avgWordLabel = new JLabel();
+		my_avgWordLabel.setBorder(BorderFactory
+				.createEtchedBorder(EtchedBorder.LOWERED));
+		my_avgWordLabel.setBackground(LABEL_COLOR);
+		statsPane.add(my_avgWordLabel);
 
 		return statsPane;
 	}
