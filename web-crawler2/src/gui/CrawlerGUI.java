@@ -40,7 +40,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 	private static final int NUM_KEYWORDS = 10;
 
-	public static final String DEFULT_START_PAGE = "http://en.wikipedia.org/wiki/Seppuku";
+	public static final String DEFULT_START_PAGE = "http://css.insttech.washington.edu/~mealden/";
 
 	public static final String DEFULT_SEED = "100";
 
@@ -192,7 +192,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 				String [] keywords = new String [my_keywordList.size()];
 				int i = 0;
 				for (JTextField a_keyWord : my_keywordList) {
-					String temp = a_keyWord.getText().trim();			
+					String temp = a_keyWord.getText().trim().toLowerCase();			
 					keywords[i] = temp;
 					my_curKeywordsList.add(temp);
 					a_keyWord.setEnabled(false);

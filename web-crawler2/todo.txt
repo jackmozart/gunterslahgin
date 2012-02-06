@@ -1,5 +1,3 @@
-average words per page
-lower case all words
 wirte up
 max pages.  we should remove it or make it work. 
 
