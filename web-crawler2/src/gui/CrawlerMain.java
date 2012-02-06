@@ -7,6 +7,7 @@ import java.util.Map;
 import page.Page;
 import crawler.Crawler;
 import crawler.CrawlerSingle;
+import crawler.CrawlerTuned;
 
 public class CrawlerMain {
 
@@ -16,10 +17,10 @@ public class CrawlerMain {
 	public static void main(String[] args) {
 		String[] keys = new String[] {"coconuts", "emeralds", "cliff", "rock"};
 		
-		Crawler c = new CrawlerSingle();
+		Crawler c = new CrawlerTuned();
 		try {
 			
-	    c.crawl(new Page(new URI("http://css.insttech.washington.edu/~mealden/")), keys, 0);
+	    c.crawl(new Page(new URI("http://en.wikipedia.org/")), keys, 0);
 	    
     } catch (URISyntaxException e) {
 	    // TODO Auto-generated catch block

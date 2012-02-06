@@ -30,7 +30,7 @@ public class PageAnalyzeController extends Thread{
 	  my_pages_to_analyze = the_pages_to_analyze;
 	  my_keywords = new HashMap<String, Integer>();
 	  for(String k:the_keywords){
-	  	my_keywords.put(k, 0);
+	  	my_keywords.put(k.toLowerCase(), 0);
 	  }
 	  my_stop = the_stop;
 	  
@@ -114,8 +114,9 @@ public class PageAnalyzeController extends Thread{
 			if(a_page != null){
 				//System.out.println("Trying to analyze: " + a_page.getAddress());
 				for(String word:a_page.getWords()){
-					if(my_keywords.containsKey(word)){
-						addKeyword(word);
+					String lc_word = word.toLowerCase();
+					if(my_keywords.containsKey(lc_word)){
+						addKeyword(lc_word);
 					}
 				}
 			  synchronized(this){
