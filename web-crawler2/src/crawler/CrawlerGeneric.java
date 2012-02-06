@@ -53,7 +53,7 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 	    e.printStackTrace();
     }
 		for(String k:the_keywords){
-			my_keyword_counts.put(k, 0);
+			my_keyword_counts.put(k.toLowerCase(), 0);
 		}
 		my_max_pages = the_max_pages;
 		
