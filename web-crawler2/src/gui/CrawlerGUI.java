@@ -182,6 +182,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_statusLabel.setBorder(BorderFactory
 				.createEtchedBorder(EtchedBorder.LOWERED));
 		my_statusLabel.setBackground(LABEL_COLOR);
+		my_statusLabel.setText("Ready to run...     ");
 		my_runPanel.add(my_statusLabel);
 		
 		
