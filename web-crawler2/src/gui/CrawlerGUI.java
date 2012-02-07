@@ -32,13 +32,13 @@ import crawler.Stopbit;
 
 /**
  * 
- * @author Steven Cozart
+ * @author Steven Cozart James Gunter
  * @version 1.0
  */
 @SuppressWarnings("serial")
 public class CrawlerGUI extends JFrame implements ActionListener {
 	
-	private static final DecimalFormat DF = new DecimalFormat("0.00##");
+	private static final DecimalFormat DF = new DecimalFormat("0.##");
 
 	private static final Color LABEL_COLOR = Color.BLUE;
 
@@ -266,7 +266,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 	}
 
 	private void displayResults() {
-		my_totalTimeLabel.setText((double)my_crawler.getTimeElapsed() / 1000000000.0+ "");
+		my_totalTimeLabel.setText(DF.format((double)my_crawler.getTimeElapsed() / 1000000000.0) + "");
 		int pages_paresed = my_crawler.getPagesParsed();
 		
 		if(pages_paresed == 0){//protect against divide by zero eror
