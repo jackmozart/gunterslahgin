@@ -87,6 +87,8 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 	private Stopbit my_stop;
 
+	private JLabel my_statusLabel;
+
 	public CrawlerGUI() {
 		super();
 		
@@ -142,30 +144,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_input_url.setSize(my_input_url.getSize());
 		my_runPanel.add(my_input_url);
 
-		// num pages input spot
-		JLabel nup_pages_label = new JLabel();
-		nup_pages_label.setText("Max Pages:");
-		nup_pages_label
-				.setToolTipText("Insert numper of pages to search.  If no input is provided "
-						+ DEFULT_SEED + " pages will be searched.");
-		my_runPanel.add(nup_pages_label);
 
-		my_num_pages = new JTextField(5);
-		my_num_pages.setName("input seed");
-		my_num_pages.setText(DEFULT_SEED);
-		my_num_pages.setBackground(Color.LIGHT_GRAY);
-		my_num_pages.setSize(my_num_pages.getSize());
-		my_runPanel.add(my_num_pages);
-
-		// make path button to do work
-		my_runButton = new JButton("Run");
-		my_runPanel.add(my_runButton);
-		my_runButton.addActionListener(this);
-
-		// makes the current run stop
-		my_stopButton = new JButton("Stop");
-		my_runPanel.add(my_stopButton);
-		my_stopButton.addActionListener(this);
 
 		// make output label
 		JLabel togleLabel = new JLabel();
@@ -180,8 +159,28 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_threadTogle.setSelected(true);
 		my_runPanel.add(my_threadTogle);
 
-		//
+		// make path button to do work
+		my_runButton = new JButton("Run");
+		my_runPanel.add(my_runButton);
+		my_runButton.addActionListener(this);
 
+		// makes the current run stop
+		my_stopButton = new JButton("Stop");
+		my_runPanel.add(my_stopButton);
+		my_stopButton.addActionListener(this);
+
+		//makes the status bar
+		JLabel statusLabel = new JLabel("Status", JLabel.RIGHT);
+		statusLabel
+				.setToolTipText("The status of the application");
+		my_runPanel.add(statusLabel);
+		
+		my_statusLabel = new JLabel();
+		my_statusLabel
+				.setToolTipText("The status of the application");
+		my_runPanel.add(my_statusLabel);
+		
+		
 		this.pack();
 	}
 
@@ -190,11 +189,10 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		// run button presed begin a run
 		if (the_event.getSource() == my_runButton) {
 
-			int max_pages = normalizeNumPages();
 			Page seed = normalizeUrl();
 
 			// ensure that input is valid
-			if (max_pages != -1 && seed != null) {
+			if ( seed != null) {
 
 				// get the keywords from the user
 				String [] keywords = new String [my_keywordList.size()];
@@ -213,7 +211,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 					my_crawler = new CrawlerSingle() ;
 				}
 				my_crawler
-						.crawl(seed, keywords, max_pages);
+						.crawl(seed, keywords);
 				
 				my_stop.stop = false;
 				runUpdater();
@@ -422,22 +420,6 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 	}
 
-	public int normalizeNumPages() {
-		String input = my_num_pages.getText();
-		input.trim();
-		// make sure its a number
-		int result = -1;
-		try {
-			result = java.lang.Integer.parseInt(input);
-			if (result < 0) {
-				throw new NumberFormatException();
-			}
-
-		} catch (NumberFormatException e) {
-			errorWindow("Max pages must be a Integer > 0");
-		}
-		return result;
-	}
 
 	/**
 	 * 
