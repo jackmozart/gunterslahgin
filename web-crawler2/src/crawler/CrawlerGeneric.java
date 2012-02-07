@@ -22,8 +22,6 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 	
 	protected long my_crawl_start_time;
 	
-	protected int my_max_pages;
-	
 	protected Stopbit my_stop_bit;
 	
 	public CrawlerGeneric(){
@@ -43,19 +41,17 @@ public abstract class CrawlerGeneric implements Crawler, Runnable{
 	}
 	
 	@Override
-	public void crawl(Page the_seed_page, String[] the_keywords, int the_max_pages){
+	public void crawl(Page the_seed_page, String[] the_keywords){
 		my_crawl_start_time = System.nanoTime();
 		
 		try {
 	    my_pages_to_retrieve.put(the_seed_page);
     } catch (InterruptedException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
     }
 		for(String k:the_keywords){
 			my_keyword_counts.put(k.toLowerCase(), 0);
 		}
-		my_max_pages = the_max_pages;
 		
 		Thread me = new Thread(this);
 		me.start();

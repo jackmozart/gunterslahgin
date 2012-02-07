@@ -6,7 +6,7 @@ import page.Page;
 
 public interface Crawler {
 	
-	void crawl(Page the_seed_page, String[] the_keywords, int the_max_pages);
+	void crawl(Page the_seed_page, String[] the_keywords);
 	
 	/**
 	 * @return Total number of keyword matches found for each keyword

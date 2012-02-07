@@ -42,7 +42,7 @@ public class CrawlerTuned implements Crawler {
 	}
 	
 	@Override
-	public void crawl(Page the_seed_page, String[] the_keywords, int the_max_pages) {
+	public void crawl(Page the_seed_page, String[] the_keywords) {
 		my_start_time = System.nanoTime();
 		
 		try {
