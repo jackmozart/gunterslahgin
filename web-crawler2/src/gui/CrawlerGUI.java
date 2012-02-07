@@ -220,7 +220,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 				
 				my_stop.stop = false;
 				runUpdater();
-				
+				my_statusLabel.setText("Running...          ");
 				my_stopButton.setEnabled(true);
 				my_runButton.setEnabled(false);
 			}
@@ -228,12 +228,13 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 			if (my_crawler == null) {
 				errorWindow("No run is active");
 			} else {
+				my_statusLabel.setText("Shutting down...    ");
 				my_crawler.stop();
 				
 				my_stop.stop = true;
 				my_stopButton.setEnabled(false);
 				my_runButton.setEnabled(true);
-				
+				my_statusLabel.setText("Stopped...          ");
 				// wait for the thread to stop.
 				try {
 					Thread.sleep(UPDATE_INTERVAL);
