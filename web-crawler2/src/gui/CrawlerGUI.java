@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,8 @@ import crawler.Stopbit;
  */
 @SuppressWarnings("serial")
 public class CrawlerGUI extends JFrame implements ActionListener {
+	
+	private static final DecimalFormat DF = new DecimalFormat("0.00##");
 
 	private static final Color LABEL_COLOR = Color.BLUE;
 
@@ -272,9 +275,9 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		}
 		
 		my_pagesProccesedLabel.setText(pages_paresed + "");
-		my_pageTimeLabel.setText(((double) my_crawler.getParseTime() / 1000000000.0) / pages_paresed+ " ");
-		my_avgUrlLabel.setText( ( "" +(double) my_crawler.getUrlsFound()/(double) pages_paresed) );
-		my_avgWordLabel.setText((""+ (double) my_crawler.getWordCount()/(double) pages_paresed));
+		my_pageTimeLabel.setText(  DF.format(((double) my_crawler.getParseTime() / 1000000000.0) / pages_paresed )+ " ");
+		my_avgUrlLabel.setText( ( "" +DF.format( (double) my_crawler.getUrlsFound()/(double) pages_paresed)) );
+		my_avgWordLabel.setText((""+DF.format( (double) my_crawler.getWordCount()/(double) pages_paresed)));
 		
 		
 		Map<String, Integer> wordCounts = my_crawler.getKeywordCounts();
@@ -282,7 +285,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 			String a_word = my_curKeywordsList.get(i);
 			Integer count = wordCounts.get(a_word);
 			if(count != null){
-				my_hitPerPage.get(i).setText("" + ((double) count / (double)pages_paresed));
+				my_hitPerPage.get(i).setText("" + DF.format(((double) count / (double)pages_paresed)) );
 				my_totalHit.get(i).setText("" + count);
 			}else{
 				System.out.print(":(");
