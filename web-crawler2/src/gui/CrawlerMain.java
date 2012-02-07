@@ -17,7 +17,7 @@ public class CrawlerMain {
 	public static void main(String[] args) {
 		String[] keys = new String[] {"coconuts", "emeralds", "cliff", "rock"};
 		
-		Crawler c = new CrawlerTuned();
+		Crawler c = new CrawlerSingle();
 		try {
 			
 	    c.crawl(new Page(new URI("http://en.wikipedia.org/")), keys, 0);

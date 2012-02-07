@@ -27,6 +27,7 @@ import page.Page;
 import crawler.Crawler;
 import crawler.CrawlerSingle;
 import crawler.CrawlerTuned;
+import crawler.Stopbit;
 
 /**
  * 
@@ -45,6 +46,8 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 	public static final String DEFULT_SEED = "100";
 
 	private static final int KEYWORD_LENGTH = 15;
+	
+	private static final long UPDATE_INTERVAL = 500;
 
 	private JPanel my_runPanel;
 
@@ -82,8 +85,13 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 	private JLabel my_avgWordLabel;
 
+	private Stopbit my_stop;
+
 	public CrawlerGUI() {
 		super();
+		
+		my_stop = new Stopbit();
+		
 		my_curKeywordsList = new ArrayList<String>();
 		my_contentPane = new JPanel();
 		my_contentPane.setLayout(new BorderLayout());
@@ -206,12 +214,25 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 				}
 				my_crawler
 						.crawl(seed, keywords, max_pages);
+				
+				my_stop.stop = false;
+				runUpdater();
 			}
 		} else if (the_event.getSource() == my_stopButton) {
 			if (my_crawler == null) {
 				errorWindow("No run is active");
 			} else {
 				my_crawler.stop();
+				my_stop.stop = true;
+				
+				//wait for the thread to stop.
+				try {
+	        Thread.sleep(UPDATE_INTERVAL);
+        } catch (InterruptedException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+				
 				// display final output.
 				displayResults();
 				
@@ -224,6 +245,10 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 			}
 		}
 		this.pack();
+	}
+	
+	private void runUpdater(){
+		(new DisplayUpdateThread(my_stop)).start();
 	}
 
 	private void displayResults() {
@@ -423,5 +448,28 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		JOptionPane.showMessageDialog(new JFrame(), message,
 				"Does not compute", JOptionPane.ERROR_MESSAGE);
 	}
-
+	
+	
+	private class DisplayUpdateThread extends Thread{
+		
+		private Stopbit my_stop;
+		
+		private DisplayUpdateThread(Stopbit the_stop){
+			my_stop = the_stop;
+		}
+		
+		public void run(){
+			while(!my_stop.stop){
+				
+				displayResults();
+				
+				try {
+	        Thread.sleep(UPDATE_INTERVAL);
+        } catch (InterruptedException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+			}
+		}
+	}
 }
