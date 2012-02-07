@@ -168,6 +168,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_stopButton = new JButton("Stop");
 		my_runPanel.add(my_stopButton);
 		my_stopButton.addActionListener(this);
+		my_stopButton.setEnabled(false);
 
 		//makes the status bar
 		JLabel statusLabel = new JLabel("Status", JLabel.RIGHT);
@@ -178,6 +179,9 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 		my_statusLabel = new JLabel();
 		my_statusLabel
 				.setToolTipText("The status of the application");
+		my_statusLabel.setBorder(BorderFactory
+				.createEtchedBorder(EtchedBorder.LOWERED));
+		my_statusLabel.setBackground(LABEL_COLOR);
 		my_runPanel.add(my_statusLabel);
 		
 		
@@ -193,7 +197,7 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 
 			// ensure that input is valid
 			if ( seed != null) {
-
+				
 				// get the keywords from the user
 				String [] keywords = new String [my_keywordList.size()];
 				int i = 0;
@@ -215,31 +219,38 @@ public class CrawlerGUI extends JFrame implements ActionListener {
 				
 				my_stop.stop = false;
 				runUpdater();
+				
+				my_stopButton.setEnabled(true);
+				my_runButton.setEnabled(false);
 			}
 		} else if (the_event.getSource() == my_stopButton) {
 			if (my_crawler == null) {
 				errorWindow("No run is active");
 			} else {
 				my_crawler.stop();
+				
 				my_stop.stop = true;
+				my_stopButton.setEnabled(false);
+				my_runButton.setEnabled(true);
 				
-				//wait for the thread to stop.
+				// wait for the thread to stop.
 				try {
-	        Thread.sleep(UPDATE_INTERVAL);
-        } catch (InterruptedException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        }
-				
+					Thread.sleep(UPDATE_INTERVAL);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 				// display final output.
 				displayResults();
-				
-				//re enable all labels
+
+				// re enable all labels
 				for (JTextField a_keyWord : my_keywordList) {
 					a_keyWord.setEnabled(true);
 				}
 				
 				my_curKeywordsList.clear();
+				
 			}
 		}
 		this.pack();
