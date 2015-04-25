@@ -1,0 +1,1 @@
+a web slag in java that crawls the web for set number of pages parsing in text found on those pages.
